@@ -35,3 +35,7 @@ The runtime expects carrier data files from `data/`. The Docker image copies the
 ## Integration
 
 LibreRTC Node currently embeds this runtime binary into its Docker image. Keep the binary name `olcrtc` unless all consumers are updated together.
+
+## License
+
+MIT
