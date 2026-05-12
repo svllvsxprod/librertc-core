@@ -1,4 +1,4 @@
-module github.com/openlibrecommunity/olcrtc
+module github.com/svllvsxprod/librertc-core
 
 go 1.25.0
 

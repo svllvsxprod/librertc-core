@@ -10,12 +10,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/openlibrecommunity/olcrtc/internal/carrier"
-	"github.com/openlibrecommunity/olcrtc/internal/logger"
-	"github.com/openlibrecommunity/olcrtc/internal/transport"
 	"github.com/pion/webrtc/v4"
 	"github.com/pion/webrtc/v4/pkg/media"
 	"github.com/pion/webrtc/v4/pkg/media/samplebuilder"
+	"github.com/svllvsxprod/librertc-core/internal/carrier"
+	"github.com/svllvsxprod/librertc-core/internal/logger"
+	"github.com/svllvsxprod/librertc-core/internal/transport"
 )
 
 const (

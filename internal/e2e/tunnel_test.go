@@ -16,14 +16,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/openlibrecommunity/olcrtc/internal/app/session"
-	"github.com/openlibrecommunity/olcrtc/internal/carrier"
-	"github.com/openlibrecommunity/olcrtc/internal/client"
-	"github.com/openlibrecommunity/olcrtc/internal/link"
-	"github.com/openlibrecommunity/olcrtc/internal/provider/jazz"
-	"github.com/openlibrecommunity/olcrtc/internal/provider/wbstream"
-	"github.com/openlibrecommunity/olcrtc/internal/server"
 	"github.com/pion/webrtc/v4"
+	"github.com/svllvsxprod/librertc-core/internal/app/session"
+	"github.com/svllvsxprod/librertc-core/internal/carrier"
+	"github.com/svllvsxprod/librertc-core/internal/client"
+	"github.com/svllvsxprod/librertc-core/internal/link"
+	"github.com/svllvsxprod/librertc-core/internal/provider/jazz"
+	"github.com/svllvsxprod/librertc-core/internal/provider/wbstream"
+	"github.com/svllvsxprod/librertc-core/internal/server"
 )
 
 const testKeyHex = "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff"

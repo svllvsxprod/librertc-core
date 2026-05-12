@@ -569,8 +569,8 @@ func writeIVFHeader(w io.Writer, fourCC string, width, height, frameRate int) er
 	binary.LittleEndian.PutUint16(header[4:6], 0)
 	binary.LittleEndian.PutUint16(header[6:8], 32)
 	copy(header[8:12], []byte(fourCC))
-	binary.LittleEndian.PutUint16(header[12:14], uint16(width)) //nolint:gosec,lll // G115: bounded conversion verified by surrounding logic
-	binary.LittleEndian.PutUint16(header[14:16], uint16(height)) //nolint:gosec,lll // G115: bounded conversion verified by surrounding logic
+	binary.LittleEndian.PutUint16(header[12:14], uint16(width))     //nolint:gosec,lll // G115: bounded conversion verified by surrounding logic
+	binary.LittleEndian.PutUint16(header[14:16], uint16(height))    //nolint:gosec,lll // G115: bounded conversion verified by surrounding logic
 	binary.LittleEndian.PutUint32(header[16:20], uint32(frameRate)) //nolint:gosec,lll // G115: bounded conversion verified by surrounding logic
 	binary.LittleEndian.PutUint32(header[20:24], 1)
 	binary.LittleEndian.PutUint32(header[24:28], 0)

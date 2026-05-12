@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/openlibrecommunity/olcrtc/internal/logger"
-	"github.com/openlibrecommunity/olcrtc/internal/protect"
+	"github.com/svllvsxprod/librertc-core/internal/logger"
+	"github.com/svllvsxprod/librertc-core/internal/protect"
 )
 
 type testProtector struct {

@@ -4,7 +4,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/openlibrecommunity/olcrtc/internal/carrier"
+	"github.com/svllvsxprod/librertc-core/internal/carrier"
 )
 
 func TestRegister(t *testing.T) {

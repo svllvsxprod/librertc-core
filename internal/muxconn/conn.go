@@ -23,9 +23,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/openlibrecommunity/olcrtc/internal/crypto"
-	"github.com/openlibrecommunity/olcrtc/internal/link"
-	"github.com/openlibrecommunity/olcrtc/internal/logger"
+	"github.com/svllvsxprod/librertc-core/internal/crypto"
+	"github.com/svllvsxprod/librertc-core/internal/link"
+	"github.com/svllvsxprod/librertc-core/internal/logger"
 )
 
 // ErrClosed is returned from Read/Write after the conn has been closed.

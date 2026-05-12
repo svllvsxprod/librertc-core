@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	module    = "github.com/openlibrecommunity/olcrtc"
+	module    = "github.com/svllvsxprod/librertc-core"
 	buildDir  = "build"
 	ldflags   = "-s -w"
 	goVersion = "1.25"

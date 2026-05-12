@@ -33,9 +33,9 @@ func TestGetConnectionInfo(t *testing.T) {
 			t.Fatalf("display_name query = %q", r.URL.Query().Get("display_name"))
 		}
 		_ = json.NewEncoder(w).Encode(ConnectionInfo{
-			RoomID:      "room", //nolint:goconst // test literal, repetition is intentional
+			RoomID:      "room",    //nolint:goconst // test literal, repetition is intentional
 			PeerID:      "peer-id", //nolint:goconst // test literal, repetition is intentional
-			Credentials: "creds", //nolint:goconst // test literal, repetition is intentional
+			Credentials: "creds",   //nolint:goconst // test literal, repetition is intentional
 		})
 	}))
 

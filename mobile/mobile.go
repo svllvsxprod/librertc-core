@@ -1,4 +1,4 @@
-// Package mobile provides a gomobile-compatible API for olcRTC.
+// Package mobile provides a gomobile-compatible API for LibreRTC.
 // Build with: gomobile bind -target=android ./mobile
 package mobile
 
@@ -13,10 +13,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/openlibrecommunity/olcrtc/internal/app/session"
-	"github.com/openlibrecommunity/olcrtc/internal/client"
-	"github.com/openlibrecommunity/olcrtc/internal/logger"
-	"github.com/openlibrecommunity/olcrtc/internal/protect"
+	"github.com/svllvsxprod/librertc-core/internal/app/session"
+	"github.com/svllvsxprod/librertc-core/internal/client"
+	"github.com/svllvsxprod/librertc-core/internal/logger"
+	"github.com/svllvsxprod/librertc-core/internal/protect"
 
 	_ "golang.org/x/mobile/bind"                       // ensure gomobile bind is available
 	_ "google.golang.org/genproto/protobuf/field_mask" // keep gomobile on post-split genproto modules
@@ -28,20 +28,20 @@ type SocketProtector interface {
 	Protect(fd int) bool
 }
 
-// LogWriter receives log messages from olcRTC.
+// LogWriter receives log messages from LibreRTC.
 type LogWriter interface {
 	WriteLog(msg string)
 }
 
 var (
-	errAlreadyRunning       = errors.New("olcRTC already running")
+	errAlreadyRunning       = errors.New("LibreRTC already running")
 	errCarrierRequired      = errors.New("carrier is required")
 	errRoomIDRequired       = errors.New("roomID is required")
 	errClientIDRequired     = errors.New("clientID is required")
 	errKeyHexRequired       = errors.New("keyHex is required")
-	errNotRunning           = errors.New("olcRTC is not running")
-	errStoppedBeforeReady   = errors.New("olcRTC stopped before becoming ready")
-	errStartTimedOut        = errors.New("olcRTC start timed out")
+	errNotRunning           = errors.New("LibreRTC is not running")
+	errStoppedBeforeReady   = errors.New("LibreRTC stopped before becoming ready")
+	errStartTimedOut        = errors.New("LibreRTC start timed out")
 	errHTTPPingTimedOut     = errors.New("HTTP ping timed out")
 	errUnexpectedHTTPStatus = errors.New("unexpected HTTP status")
 )
@@ -65,14 +65,14 @@ const (
 )
 
 var (
-	mu                 sync.Mutex //nolint:gochecknoglobals // package-level state intentional
-	defaults           mobileConfig //nolint:gochecknoglobals // package-level state intentional
-	defaultsSet        sync.Once //nolint:gochecknoglobals // package-level state intentional
-	registerSet        sync.Once //nolint:gochecknoglobals // package-level state intentional
+	mu                 sync.Mutex            //nolint:gochecknoglobals // package-level state intentional
+	defaults           mobileConfig          //nolint:gochecknoglobals // package-level state intentional
+	defaultsSet        sync.Once             //nolint:gochecknoglobals // package-level state intentional
+	registerSet        sync.Once             //nolint:gochecknoglobals // package-level state intentional
 	runClientWithReady = client.RunWithReady //nolint:gochecknoglobals // package-level state intentional
-	cancel             context.CancelFunc //nolint:gochecknoglobals // package-level state intentional
-	done               chan struct{} //nolint:gochecknoglobals // package-level state intentional
-	ready              chan struct{} //nolint:gochecknoglobals // package-level state intentional
+	cancel             context.CancelFunc    //nolint:gochecknoglobals // package-level state intentional
+	done               chan struct{}         //nolint:gochecknoglobals // package-level state intentional
+	ready              chan struct{}         //nolint:gochecknoglobals // package-level state intentional
 	errRun             error
 )
 
@@ -96,7 +96,7 @@ func SetProtector(p SocketProtector) {
 	}
 }
 
-// SetLogWriter sets a custom log writer for olcRTC output.
+// SetLogWriter sets a custom log writer for LibreRTC output.
 func SetLogWriter(w LogWriter) {
 	if w != nil {
 		log.SetOutput(&logBridge{w: w})
@@ -154,7 +154,7 @@ func SetDebug(enabled bool) {
 	log.SetFlags(log.Ltime)
 }
 
-// Start launches the olcRTC client in background.
+// Start launches the LibreRTC client in background.
 // carrierName: carrier name ("telemost", "jazz", "wbstream")
 // roomID: carrier-specific room ID
 // clientID: client identifier that must match the server's -client-id
@@ -667,7 +667,7 @@ func WaitReady(timeoutMillis int) error {
 	}
 }
 
-// Stop gracefully stops the olcRTC client.
+// Stop gracefully stops the LibreRTC client.
 func Stop() {
 	mu.Lock()
 	cancelFunc := cancel
@@ -685,7 +685,7 @@ func Stop() {
 	}
 }
 
-// IsRunning returns true if the olcRTC client is active.
+// IsRunning returns true if the LibreRTC client is active.
 func IsRunning() bool {
 	mu.Lock()
 	defer mu.Unlock()

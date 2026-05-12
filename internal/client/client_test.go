@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	cryptopkg "github.com/openlibrecommunity/olcrtc/internal/crypto"
-	"github.com/openlibrecommunity/olcrtc/internal/muxconn"
+	cryptopkg "github.com/svllvsxprod/librertc-core/internal/crypto"
+	"github.com/svllvsxprod/librertc-core/internal/muxconn"
 	"github.com/xtaci/smux"
 )
 

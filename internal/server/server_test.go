@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	cryptopkg "github.com/openlibrecommunity/olcrtc/internal/crypto"
-	"github.com/openlibrecommunity/olcrtc/internal/muxconn"
+	cryptopkg "github.com/svllvsxprod/librertc-core/internal/crypto"
+	"github.com/svllvsxprod/librertc-core/internal/muxconn"
 	"github.com/xtaci/smux"
 )
 
@@ -48,7 +48,7 @@ func TestSmuxConfig(t *testing.T) {
 func TestParseConnectRequest(t *testing.T) {
 	buf, err := json.Marshal(ConnectRequest{
 		Cmd:      "connect",
-		ClientID: "client-1", //nolint:goconst // test literal, repetition is intentional
+		ClientID: "client-1",    //nolint:goconst // test literal, repetition is intentional
 		Addr:     "example.com", //nolint:goconst // test literal, repetition is intentional
 		Port:     443,
 	})

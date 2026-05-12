@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/openlibrecommunity/olcrtc/internal/link"
-	"github.com/openlibrecommunity/olcrtc/internal/transport"
+	"github.com/svllvsxprod/librertc-core/internal/link"
+	"github.com/svllvsxprod/librertc-core/internal/transport"
 )
 
 var (

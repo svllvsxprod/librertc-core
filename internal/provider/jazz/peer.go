@@ -13,10 +13,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/openlibrecommunity/olcrtc/internal/logger"
-	"github.com/openlibrecommunity/olcrtc/internal/protect"
-	"github.com/openlibrecommunity/olcrtc/internal/provider"
 	"github.com/pion/webrtc/v4"
+	"github.com/svllvsxprod/librertc-core/internal/logger"
+	"github.com/svllvsxprod/librertc-core/internal/protect"
+	"github.com/svllvsxprod/librertc-core/internal/provider"
 )
 
 const (

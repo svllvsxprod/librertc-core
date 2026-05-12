@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/openlibrecommunity/olcrtc/internal/app/session"
-	"github.com/openlibrecommunity/olcrtc/internal/logger"
+	"github.com/svllvsxprod/librertc-core/internal/app/session"
+	"github.com/svllvsxprod/librertc-core/internal/logger"
 )
 
 var errBoom = errors.New("boom")
@@ -20,10 +20,10 @@ func TestToSessionConfig(t *testing.T) {
 		mode:            "cnc",
 		link:            "direct", //nolint:goconst // test literal, repetition is intentional
 		transport:       "vp8channel",
-		carrier:         "jazz", //nolint:goconst // test literal, repetition is intentional
-		roomID:          "room", //nolint:goconst // test literal, repetition is intentional
+		carrier:         "jazz",   //nolint:goconst // test literal, repetition is intentional
+		roomID:          "room",   //nolint:goconst // test literal, repetition is intentional
 		clientID:        "client", //nolint:goconst // test literal, repetition is intentional
-		keyHex:          "key", //nolint:goconst // test literal, repetition is intentional
+		keyHex:          "key",    //nolint:goconst // test literal, repetition is intentional
 		socksHost:       "127.0.0.1",
 		socksPort:       1080,
 		dnsServer:       "1.1.1.1:53", //nolint:goconst // test literal, repetition is intentional

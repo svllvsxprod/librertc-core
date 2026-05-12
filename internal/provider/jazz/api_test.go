@@ -32,7 +32,7 @@ func TestCreateMeetingAndPreconnect(t *testing.T) {
 			if r.Method != http.MethodPost {
 				t.Fatalf("create method = %s", r.Method)
 			}
-			_ = json.NewEncoder(w).Encode(createResponse{RoomID: "room-1", Password: "pass"}) //nolint:gosec,lll // G117: test-only struct mirroring upstream API shape
+			_ = json.NewEncoder(w).Encode(createResponse{RoomID: "room-1", Password: "pass"}) //nolint:gosec,lll // G117: test-only API fixture
 		case "/room/room-1/preconnect":
 			if r.Method != http.MethodPost {
 				t.Fatalf("preconnect method = %s", r.Method)
@@ -116,7 +116,7 @@ func TestNewPeerUsesRoomAPI(t *testing.T) {
 	withJazzAPIServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/room/create-meeting":
-			_ = json.NewEncoder(w).Encode(createResponse{RoomID: "new-room", Password: "new-pass"}) //nolint:gosec,lll // G117: test-only struct mirroring upstream API shape
+			_ = json.NewEncoder(w).Encode(createResponse{RoomID: "new-room", Password: "new-pass"}) //nolint:gosec,lll // G117: test-only API fixture
 		case "/room/new-room/preconnect", "/room/existing/preconnect":
 			_ = json.NewEncoder(w).Encode(map[string]string{"connectorUrl": "wss://connector"})
 		default:

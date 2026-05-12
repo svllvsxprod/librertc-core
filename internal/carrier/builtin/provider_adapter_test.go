@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/openlibrecommunity/olcrtc/internal/carrier"
 	"github.com/pion/webrtc/v4"
+	"github.com/svllvsxprod/librertc-core/internal/carrier"
 )
 
 var (

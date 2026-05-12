@@ -5,8 +5,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/openlibrecommunity/olcrtc/internal/carrier"
-	"github.com/openlibrecommunity/olcrtc/internal/transport"
+	"github.com/svllvsxprod/librertc-core/internal/carrier"
+	"github.com/svllvsxprod/librertc-core/internal/transport"
 )
 
 const defaultMaxPayloadSize = 12 * 1024

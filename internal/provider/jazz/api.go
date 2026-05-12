@@ -10,7 +10,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/openlibrecommunity/olcrtc/internal/protect"
+	"github.com/svllvsxprod/librertc-core/internal/protect"
 )
 
 const (

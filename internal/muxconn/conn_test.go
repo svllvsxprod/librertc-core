@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	cryptopkg "github.com/openlibrecommunity/olcrtc/internal/crypto"
+	cryptopkg "github.com/svllvsxprod/librertc-core/internal/crypto"
 )
 
 var errMuxBoom = errors.New("boom")

@@ -4,11 +4,11 @@ package builtin
 import (
 	"context"
 
-	"github.com/openlibrecommunity/olcrtc/internal/carrier"
-	"github.com/openlibrecommunity/olcrtc/internal/provider"
-	"github.com/openlibrecommunity/olcrtc/internal/provider/jazz"
-	"github.com/openlibrecommunity/olcrtc/internal/provider/telemost"
-	"github.com/openlibrecommunity/olcrtc/internal/provider/wbstream"
+	"github.com/svllvsxprod/librertc-core/internal/carrier"
+	"github.com/svllvsxprod/librertc-core/internal/provider"
+	"github.com/svllvsxprod/librertc-core/internal/provider/jazz"
+	"github.com/svllvsxprod/librertc-core/internal/provider/telemost"
+	"github.com/svllvsxprod/librertc-core/internal/provider/wbstream"
 )
 
 type providerFactory func(context.Context, provider.Config) (provider.Provider, error)

@@ -13,11 +13,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/openlibrecommunity/olcrtc/internal/crypto"
-	"github.com/openlibrecommunity/olcrtc/internal/link"
-	"github.com/openlibrecommunity/olcrtc/internal/logger"
-	"github.com/openlibrecommunity/olcrtc/internal/muxconn"
-	"github.com/openlibrecommunity/olcrtc/internal/names"
+	"github.com/svllvsxprod/librertc-core/internal/crypto"
+	"github.com/svllvsxprod/librertc-core/internal/link"
+	"github.com/svllvsxprod/librertc-core/internal/logger"
+	"github.com/svllvsxprod/librertc-core/internal/muxconn"
+	"github.com/svllvsxprod/librertc-core/internal/names"
 	"github.com/xtaci/smux"
 )
 

@@ -98,7 +98,7 @@ func TestWBStreamGetRoomToken(t *testing.T) {
 	withWBAPIServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/auth/api/v1/auth/user/guest-register":
-			_ = json.NewEncoder(w).Encode(guestRegisterResponse{AccessToken: "access"}) //nolint:gosec,lll // G117: test-only struct mirroring upstream API shape
+			_ = json.NewEncoder(w).Encode(guestRegisterResponse{AccessToken: "access"}) //nolint:gosec,lll // G117: test-only API fixture
 		case "/api-room/api/v2/room":
 			_ = json.NewEncoder(w).Encode(createRoomResponse{RoomID: "created"})
 		case "/api-room/api/v1/room/created/join":

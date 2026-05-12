@@ -10,7 +10,7 @@ import (
 	"net/url"
 
 	"github.com/google/uuid"
-	"github.com/openlibrecommunity/olcrtc/internal/protect"
+	"github.com/svllvsxprod/librertc-core/internal/protect"
 )
 
 //nolint:gochecknoglobals // overridable base URL for tests
@@ -21,7 +21,7 @@ var ErrAPI = errors.New("api error")
 
 // ConnectionInfo describes the connection metadata returned by the Telemost API.
 //
-//nolint:tagliatelle // wire format dictated by the upstream Telemost API
+//nolint:tagliatelle // wire format dictated by the Telemost API
 type ConnectionInfo struct {
 	RoomID       string `json:"room_id"`
 	PeerID       string `json:"peer_id"`

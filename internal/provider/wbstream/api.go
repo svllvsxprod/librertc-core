@@ -9,7 +9,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/openlibrecommunity/olcrtc/internal/protect"
+	"github.com/svllvsxprod/librertc-core/internal/protect"
 )
 
 var apiBase = "https://stream.wb.ru" //nolint:gochecknoglobals // package-level state intentional
