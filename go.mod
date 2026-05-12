@@ -10,9 +10,9 @@ require (
 	github.com/magefile/mage v1.17.1
 	github.com/pion/rtp v1.10.1
 	github.com/pion/webrtc/v4 v4.2.11
+	github.com/svllvsxprod/librertc-gr v0.0.0-20260512100325-60ac4feb94ce
 	github.com/xtaci/kcp-go/v5 v5.6.72
 	github.com/xtaci/smux v1.5.57
-	github.com/zarazaex69/gr v0.0.0-20260430043628-45b595f4fef0
 	golang.org/x/crypto v0.50.0
 	golang.org/x/mobile v0.0.0-20260410095206-2cfb76559b7b
 	google.golang.org/genproto v0.0.0-20260209200024-4cfbd4190f57
@@ -79,7 +79,7 @@ require (
 	golang.org/x/mod v0.35.0 // indirect
 	golang.org/x/net v0.53.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/sys v0.44.0 // indirect
 	golang.org/x/text v0.36.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
 	golang.org/x/tools v0.44.0 // indirect

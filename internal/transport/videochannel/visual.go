@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	grqr "github.com/zarazaex69/gr/qr"
-	grtile "github.com/zarazaex69/gr/tile"
+	grqr "github.com/svllvsxprod/librertc-gr/qr"
+	grtile "github.com/svllvsxprod/librertc-gr/tile"
 )
 
 // ErrUnexpectedQRFrameSize is returned when the decoded frame size does not match the expected dimensions.
