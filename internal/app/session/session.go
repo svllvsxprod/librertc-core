@@ -13,9 +13,7 @@ import (
 	"github.com/svllvsxprod/librertc-core/internal/client"
 	"github.com/svllvsxprod/librertc-core/internal/link"
 	"github.com/svllvsxprod/librertc-core/internal/link/direct"
-	"github.com/svllvsxprod/librertc-core/internal/names"
 	"github.com/svllvsxprod/librertc-core/internal/provider/jazz"
-	"github.com/svllvsxprod/librertc-core/internal/provider/wbstream"
 	"github.com/svllvsxprod/librertc-core/internal/server"
 	"github.com/svllvsxprod/librertc-core/internal/transport"
 	"github.com/svllvsxprod/librertc-core/internal/transport/datachannel"
@@ -453,27 +451,11 @@ func Gen(ctx context.Context, cfg Config, out func(string)) error {
 				if err != nil {
 					return fmt.Errorf("jazz.CreateRoom: %w", err)
 				}
-				roomID = info.RoomID
+				roomID = info.RoomID + ":" + info.Password
 				return nil
 			})
 			if err != nil {
 				return fmt.Errorf("gen jazz room %d: %w", i+1, err)
-			}
-			out(roomID)
-		}
-	case carrierWBStream:
-		for i := range cfg.Amount {
-			var roomID string
-			err := genRetry(ctx, func(ctx context.Context) error {
-				var err error
-				roomID, err = wbstream.CreateRoom(ctx, names.Generate())
-				if err != nil {
-					return fmt.Errorf("wbstream.CreateRoom: %w", err)
-				}
-				return nil
-			})
-			if err != nil {
-				return fmt.Errorf("gen wbstream room %d: %w", i+1, err)
 			}
 			out(roomID)
 		}
