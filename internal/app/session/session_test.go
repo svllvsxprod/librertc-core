@@ -367,6 +367,10 @@ func TestValidateGen(t *testing.T) {
 		want error
 	}{
 		{
+			name: "valid wbstream",
+			cfg:  Config{Carrier: "wbstream", DNSServer: "1.1.1.1:53", Amount: 3},
+		},
+		{
 			name: "valid jazz",
 			cfg:  Config{Carrier: "jazz", DNSServer: "1.1.1.1:53", Amount: 1},
 		},
@@ -415,11 +419,9 @@ func TestValidateGen(t *testing.T) {
 
 func TestGenUnsupportedCarrier(t *testing.T) {
 	RegisterDefaults()
-	for _, carrier := range []string{"telemost", "wbstream"} {
-		cfg := Config{Carrier: carrier, DNSServer: "1.1.1.1:53", Amount: 1}
-		err := Gen(context.Background(), cfg, func(string) {})
-		if !errors.Is(err, ErrUnsupportedCarrier) {
-			t.Fatalf("Gen(%s) error = %v, want ErrUnsupportedCarrier", carrier, err)
-		}
+	cfg := Config{Carrier: "telemost", DNSServer: "1.1.1.1:53", Amount: 1}
+	err := Gen(context.Background(), cfg, func(string) {})
+	if !errors.Is(err, ErrUnsupportedCarrier) {
+		t.Fatalf("Gen(telemost) error = %v, want ErrUnsupportedCarrier", err)
 	}
 }

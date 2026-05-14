@@ -22,12 +22,10 @@ func withTelemostAPIServer(t *testing.T, h http.Handler) {
 }
 
 func TestGetConnectionInfo(t *testing.T) {
-	withTelemostAPIServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			t.Fatalf("method = %s", r.Method)
-		}
-		if !strings.Contains(r.URL.EscapedPath(), "/conferences/room%2Fid/connection") {
-			t.Fatalf("path = %q escaped=%q", r.URL.Path, r.URL.EscapedPath())
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /conferences/{id...}", func(w http.ResponseWriter, r *http.Request) {
+		if !strings.HasPrefix(r.URL.Path, "/conferences/room/id/connection") {
+			t.Fatalf("path = %q", r.URL.Path)
 		}
 		if r.URL.Query().Get("display_name") != "peer" {
 			t.Fatalf("display_name query = %q", r.URL.Query().Get("display_name"))
@@ -37,7 +35,9 @@ func TestGetConnectionInfo(t *testing.T) {
 			PeerID:      "peer-id", //nolint:goconst // test literal, repetition is intentional
 			Credentials: "creds",   //nolint:goconst // test literal, repetition is intentional
 		})
-	}))
+	})
+
+	withTelemostAPIServer(t, mux)
 
 	info, err := GetConnectionInfo(context.Background(), "room/id", "peer")
 	if err != nil {
@@ -65,13 +65,16 @@ func TestGetConnectionInfoErrors(t *testing.T) {
 }
 
 func TestTelemostNewPeerUsesConnectionInfo(t *testing.T) {
-	withTelemostAPIServer(t, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, _ *http.Request) {
 		_ = json.NewEncoder(w).Encode(ConnectionInfo{
 			RoomID:      "room",
 			PeerID:      "peer-id",
 			Credentials: "creds",
 		})
-	}))
+	})
+
+	withTelemostAPIServer(t, mux)
 
 	p, err := NewPeer(context.Background(), "room", "name", nil)
 	if err != nil {

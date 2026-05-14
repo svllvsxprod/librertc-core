@@ -11,7 +11,6 @@ import (
 	"io"
 	"net"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"github.com/svllvsxprod/librertc-core/internal/crypto"
@@ -21,46 +20,6 @@ import (
 	"github.com/svllvsxprod/librertc-core/internal/names"
 	"github.com/xtaci/smux"
 )
-
-var stats runtimeStats
-
-type runtimeStats struct {
-	uploadBytes   atomic.Uint64
-	downloadBytes atomic.Uint64
-}
-
-// StatsSnapshot contains cumulative tunnel counters for the current client process.
-type StatsSnapshot struct {
-	UploadBytes   uint64
-	DownloadBytes uint64
-}
-
-// ResetStats resets cumulative tunnel counters for a new client run.
-func ResetStats() {
-	stats.uploadBytes.Store(0)
-	stats.downloadBytes.Store(0)
-}
-
-// SnapshotStats returns cumulative tunnel counters for the current client run.
-func SnapshotStats() StatsSnapshot {
-	return StatsSnapshot{
-		UploadBytes:   stats.uploadBytes.Load(),
-		DownloadBytes: stats.downloadBytes.Load(),
-	}
-}
-
-type countingReader struct {
-	r io.Reader
-	n *atomic.Uint64
-}
-
-func (r countingReader) Read(p []byte) (int, error) {
-	n, err := r.r.Read(p)
-	if n > 0 {
-		r.n.Add(uint64(n))
-	}
-	return n, err
-}
 
 var (
 	// ErrConnectFailed is returned when a tunnel connection fails.
@@ -167,8 +126,6 @@ func RunWithReady(
 	seiFragmentSize int,
 	seiAckTimeoutMS int,
 ) error {
-	ResetStats()
-
 	runCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -416,10 +373,10 @@ func (c *Client) tunnel(conn net.Conn, sess *smux.Session, targetAddr string, ta
 	}
 
 	go func() {
-		_, _ = io.Copy(stream, countingReader{r: conn, n: &stats.uploadBytes})
+		_, _ = io.Copy(stream, conn)
 		_ = stream.Close()
 	}()
-	_, _ = io.Copy(conn, countingReader{r: stream, n: &stats.downloadBytes})
+	_, _ = io.Copy(conn, stream)
 }
 
 func (c *Client) sendConnectRequest(stream *smux.Stream, targetAddr string, targetPort int) error {

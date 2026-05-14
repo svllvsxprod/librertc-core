@@ -6,7 +6,6 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 )
 
@@ -21,27 +20,19 @@ func withJazzAPIServer(t *testing.T, h http.Handler) {
 	apiBase = srv.URL
 }
 
-//nolint:cyclop // table-driven test naturally has many branches
 func TestCreateMeetingAndPreconnect(t *testing.T) {
-	withJazzAPIServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("POST /room/create-meeting", func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get(headerAuthType) != authTypeAnonymous {
 			t.Fatalf("missing auth header: %v", r.Header)
 		}
-		switch r.URL.Path {
-		case "/room/create-meeting": //nolint:goconst // test literal, repetition is intentional
-			if r.Method != http.MethodPost {
-				t.Fatalf("create method = %s", r.Method)
-			}
-			_ = json.NewEncoder(w).Encode(createResponse{RoomID: "room-1", Password: "pass"}) //nolint:gosec,lll // G117: test-only API fixture
-		case "/room/room-1/preconnect":
-			if r.Method != http.MethodPost {
-				t.Fatalf("preconnect method = %s", r.Method)
-			}
-			_ = json.NewEncoder(w).Encode(map[string]string{"connectorUrl": "wss://connector"}) //nolint:goconst,lll // test literal, repetition is intentional
-		default:
-			http.NotFound(w, r)
-		}
-	}))
+		_ = json.NewEncoder(w).Encode(createResponse{RoomID: "room-1", Password: "pass"}) //nolint:gosec,lll // G117: test-only struct mirroring upstream API shape
+	})
+	mux.HandleFunc("POST /room/room-1/preconnect", func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(map[string]string{"connectorUrl": "wss://connector"}) //nolint:goconst,lll // test literal, repetition is intentional
+	})
+
+	withJazzAPIServer(t, mux)
 
 	headers := map[string]string{
 		headerAuthType: authTypeAnonymous,
@@ -64,18 +55,16 @@ func TestCreateMeetingAndPreconnect(t *testing.T) {
 	}
 }
 
-//nolint:cyclop // table-driven test naturally has many branches
 func TestCreateRoomAndJoinRoom(t *testing.T) {
-	withJazzAPIServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case "/room/create-meeting":
-			_ = json.NewEncoder(w).Encode(createResponse{RoomID: "new-room", Password: "new-pass"}) //nolint:goconst,gosec,lll // test literal; G117 is a false positive for test fixtures
-		case "/room/new-room/preconnect", "/room/existing/preconnect":
-			_ = json.NewEncoder(w).Encode(map[string]string{"connectorUrl": "wss://connector"})
-		default:
-			http.NotFound(w, r)
-		}
-	}))
+	mux := http.NewServeMux()
+	mux.HandleFunc("POST /room/create-meeting", func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(createResponse{RoomID: "new-room", Password: "new-pass"}) //nolint:goconst,gosec,lll // test literal; G117 is a false positive for test fixtures
+	})
+	mux.HandleFunc("POST /room/{id}/preconnect", func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(map[string]string{"connectorUrl": "wss://connector"})
+	})
+
+	withJazzAPIServer(t, mux)
 
 	room, err := createRoom(context.Background())
 	if err != nil {
@@ -95,14 +84,15 @@ func TestCreateRoomAndJoinRoom(t *testing.T) {
 }
 
 func TestJazzAPIErrors(t *testing.T) {
-	withJazzAPIServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch {
-		case strings.Contains(r.URL.Path, "create-meeting"):
-			http.Error(w, "bad", http.StatusTeapot)
-		default:
-			http.Error(w, "bad", http.StatusInternalServerError)
-		}
-	}))
+	mux := http.NewServeMux()
+	mux.HandleFunc("/room/create-meeting", func(w http.ResponseWriter, _ *http.Request) {
+		http.Error(w, "bad", http.StatusTeapot)
+	})
+	mux.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
+		http.Error(w, "bad", http.StatusInternalServerError)
+	})
+
+	withJazzAPIServer(t, mux)
 
 	if _, err := createMeeting(context.Background(), nil); !errors.Is(err, errCreateRoomFailed) {
 		t.Fatalf("createMeeting() error = %v, want %v", err, errCreateRoomFailed)
@@ -113,16 +103,15 @@ func TestJazzAPIErrors(t *testing.T) {
 }
 
 func TestNewPeerUsesRoomAPI(t *testing.T) {
-	withJazzAPIServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case "/room/create-meeting":
-			_ = json.NewEncoder(w).Encode(createResponse{RoomID: "new-room", Password: "new-pass"}) //nolint:gosec,lll // G117: test-only API fixture
-		case "/room/new-room/preconnect", "/room/existing/preconnect":
-			_ = json.NewEncoder(w).Encode(map[string]string{"connectorUrl": "wss://connector"})
-		default:
-			http.NotFound(w, r)
-		}
-	}))
+	mux := http.NewServeMux()
+	mux.HandleFunc("POST /room/create-meeting", func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(createResponse{RoomID: "new-room", Password: "new-pass"}) //nolint:gosec,lll // G117: test-only struct mirroring upstream API shape
+	})
+	mux.HandleFunc("POST /room/{id}/preconnect", func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(map[string]string{"connectorUrl": "wss://connector"})
+	})
+
+	withJazzAPIServer(t, mux)
 
 	created, err := NewPeer(context.Background(), "any", "peer", nil)
 	if err != nil {

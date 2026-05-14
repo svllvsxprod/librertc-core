@@ -3,7 +3,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -17,7 +16,6 @@ import (
 	protoLogger "github.com/livekit/protocol/logger"
 	lksdk "github.com/livekit/server-sdk-go/v2"
 	"github.com/svllvsxprod/librertc-core/internal/app/session"
-	"github.com/svllvsxprod/librertc-core/internal/client"
 	"github.com/svllvsxprod/librertc-core/internal/logger"
 	"github.com/svllvsxprod/librertc-core/internal/names"
 	"github.com/svllvsxprod/librertc-core/internal/transport/videochannel"
@@ -69,7 +67,6 @@ type config struct {
 	seiAckTimeoutMS int
 	amount          int
 	ffmpegPath      string
-	statsIntervalMS int
 }
 
 func main() {
@@ -123,10 +120,6 @@ func runWithConfig(cfg config) error {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
-	if cfg.statsIntervalMS > 0 && cfg.mode == "cnc" {
-		go emitStats(ctx, time.Duration(cfg.statsIntervalMS)*time.Millisecond)
-	}
 
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
@@ -216,44 +209,12 @@ func parseFlagsFrom(args []string, errorHandling flag.ErrorHandling) (config, er
 	fs.IntVar(&cfg.seiAckTimeoutMS, "ack-ms", 0, "ACK timeout in milliseconds for reliable visual transports (seichannel)")
 	fs.IntVar(&cfg.amount, "amount", 0, "Number of rooms to generate (gen mode only)")
 	fs.StringVar(&cfg.ffmpegPath, "ffmpeg", "ffmpeg", "Path to ffmpeg executable")
-	fs.IntVar(&cfg.statsIntervalMS, "stats-interval", 0, "Emit client traffic stats interval in milliseconds (client only)")
 
 	if err := fs.Parse(args); err != nil {
 		return cfg, fmt.Errorf("parse flags: %w", err)
 	}
 
 	return cfg, nil
-}
-
-func emitStats(ctx context.Context, interval time.Duration) {
-	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
-
-	last := client.SnapshotStats()
-	lastAt := time.Now()
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case now := <-ticker.C:
-			current := client.SnapshotStats()
-			elapsed := now.Sub(lastAt).Seconds()
-			if elapsed <= 0 {
-				elapsed = interval.Seconds()
-			}
-			payload := map[string]any{
-				"download_bytes": current.DownloadBytes,
-				"upload_bytes":   current.UploadBytes,
-				"download_bps":   uint64(float64(current.DownloadBytes-last.DownloadBytes) / elapsed),
-				"upload_bps":     uint64(float64(current.UploadBytes-last.UploadBytes) / elapsed),
-			}
-			if raw, err := json.Marshal(payload); err == nil {
-				_, _ = fmt.Fprintf(os.Stdout, "OLCRTC_STATS %s\n", raw)
-			}
-			last = current
-			lastAt = now
-		}
-	}
 }
 
 func configureLogging(debug bool) {

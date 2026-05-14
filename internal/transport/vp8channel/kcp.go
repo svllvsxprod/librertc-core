@@ -42,7 +42,7 @@ const (
 
 	// Hard cap on a single message. Anything larger would require an
 	// unbounded reassembly buffer on the receiver and is almost certainly
-	// a protocol error from the sender.
+	// a protocol error upstream.
 	kcpMaxMessage = 8 * 1024 * 1024
 )
 

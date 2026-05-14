@@ -44,7 +44,7 @@ type createRoomResponse struct {
 	RoomID string `json:"roomId"`
 }
 
-type connectionDetailsResponse struct {
+type tokenResponse struct {
 	RoomToken string `json:"roomToken"`
 	ServerURL string `json:"serverUrl"`
 }
@@ -165,18 +165,10 @@ func joinRoom(ctx context.Context, accessToken, roomID string) error {
 }
 
 func getToken(ctx context.Context, accessToken, roomID, displayName string) (string, error) {
-	details, err := getConnectionDetails(ctx, accessToken, roomID, displayName)
-	if err != nil {
-		return "", err
-	}
-	return details.RoomToken, nil
-}
-
-func getConnectionDetails(ctx context.Context, accessToken, roomID, displayName string) (connectionDetailsResponse, error) {
 	u := fmt.Sprintf("%s/api-room-manager/v2/room/%s/connection-details", apiBase, roomID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
-		return connectionDetailsResponse{}, fmt.Errorf("create request: %w", err)
+		return "", fmt.Errorf("create request: %w", err)
 	}
 
 	q := req.URL.Query()
@@ -190,18 +182,18 @@ func getConnectionDetails(ctx context.Context, accessToken, roomID, displayName 
 	client := protect.NewHTTPClient()
 	resp, err := client.Do(req)
 	if err != nil {
-		return connectionDetailsResponse{}, fmt.Errorf("do request: %w", err)
+		return "", fmt.Errorf("do request: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		b, _ := io.ReadAll(resp.Body)
-		return connectionDetailsResponse{}, fmt.Errorf("%w: %d %s", errGetToken, resp.StatusCode, b)
+		return "", fmt.Errorf("%w: %d %s", errGetToken, resp.StatusCode, b)
 	}
 
-	var res connectionDetailsResponse
+	var res tokenResponse
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return connectionDetailsResponse{}, fmt.Errorf("decode response: %w", err)
+		return "", fmt.Errorf("decode response: %w", err)
 	}
-	return res, nil
+	return res.RoomToken, nil
 }

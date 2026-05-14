@@ -1,4 +1,4 @@
-// Package mobile provides a gomobile-compatible API for LibreRTC.
+// Package mobile provides a gomobile-compatible API for olcRTC.
 // Build with: gomobile bind -target=android ./mobile
 package mobile
 
@@ -28,20 +28,20 @@ type SocketProtector interface {
 	Protect(fd int) bool
 }
 
-// LogWriter receives log messages from LibreRTC.
+// LogWriter receives log messages from olcRTC.
 type LogWriter interface {
 	WriteLog(msg string)
 }
 
 var (
-	errAlreadyRunning       = errors.New("LibreRTC already running")
+	errAlreadyRunning       = errors.New("olcRTC already running")
 	errCarrierRequired      = errors.New("carrier is required")
 	errRoomIDRequired       = errors.New("roomID is required")
 	errClientIDRequired     = errors.New("clientID is required")
 	errKeyHexRequired       = errors.New("keyHex is required")
-	errNotRunning           = errors.New("LibreRTC is not running")
-	errStoppedBeforeReady   = errors.New("LibreRTC stopped before becoming ready")
-	errStartTimedOut        = errors.New("LibreRTC start timed out")
+	errNotRunning           = errors.New("olcRTC is not running")
+	errStoppedBeforeReady   = errors.New("olcRTC stopped before becoming ready")
+	errStartTimedOut        = errors.New("olcRTC start timed out")
 	errHTTPPingTimedOut     = errors.New("HTTP ping timed out")
 	errUnexpectedHTTPStatus = errors.New("unexpected HTTP status")
 )
@@ -96,7 +96,7 @@ func SetProtector(p SocketProtector) {
 	}
 }
 
-// SetLogWriter sets a custom log writer for LibreRTC output.
+// SetLogWriter sets a custom log writer for olcRTC output.
 func SetLogWriter(w LogWriter) {
 	if w != nil {
 		log.SetOutput(&logBridge{w: w})
@@ -154,7 +154,7 @@ func SetDebug(enabled bool) {
 	log.SetFlags(log.Ltime)
 }
 
-// Start launches the LibreRTC client in background.
+// Start launches the olcRTC client in background.
 // carrierName: carrier name ("telemost", "jazz", "wbstream")
 // roomID: carrier-specific room ID
 // clientID: client identifier that must match the server's -client-id
@@ -616,6 +616,7 @@ func startWithConfig(
 }
 
 // WaitReady blocks until the selected transport is connected and the local SOCKS5 listener is ready.
+//
 //nolint:cyclop // straightforward state-machine waits with multiple terminal conditions
 func WaitReady(timeoutMillis int) error {
 	mu.Lock()
@@ -667,7 +668,7 @@ func WaitReady(timeoutMillis int) error {
 	}
 }
 
-// Stop gracefully stops the LibreRTC client.
+// Stop gracefully stops the olcRTC client.
 func Stop() {
 	mu.Lock()
 	cancelFunc := cancel
@@ -685,7 +686,7 @@ func Stop() {
 	}
 }
 
-// IsRunning returns true if the LibreRTC client is active.
+// IsRunning returns true if the olcRTC client is active.
 func IsRunning() bool {
 	mu.Lock()
 	defer mu.Unlock()

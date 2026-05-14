@@ -20,32 +20,29 @@ func withWBAPIServer(t *testing.T, h http.Handler) {
 	apiBase = srv.URL
 }
 
-//nolint:cyclop // table-driven test naturally has many branches
 func TestWBStreamAPIHappyPath(t *testing.T) {
-	withWBAPIServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case "/auth/api/v1/auth/user/guest-register":
-			if r.Method != http.MethodPost {
-				t.Fatalf("guest method = %s", r.Method)
-			}
-			_ = json.NewEncoder(w).Encode(guestRegisterResponse{AccessToken: "access"}) //nolint:goconst,gosec,lll // test literal; G117 is a false positive for test fixtures
-		case "/api-room/api/v2/room":
-			if r.Header.Get("Authorization") != "Bearer access" {
-				t.Fatalf("room auth = %q", r.Header.Get("Authorization"))
-			}
-			w.WriteHeader(http.StatusCreated)
-			_ = json.NewEncoder(w).Encode(createRoomResponse{RoomID: "room"}) //nolint:goconst,lll // test literal, repetition is intentional
-		case "/api-room/api/v1/room/room/join":
-			w.WriteHeader(http.StatusOK)
-		case "/api-room-manager/v2/room/room/connection-details":
-			if r.URL.Query().Get("displayName") != "peer" {
-				t.Fatalf("displayName query = %q", r.URL.Query().Get("displayName"))
-			}
-			_ = json.NewEncoder(w).Encode(connectionDetailsResponse{RoomToken: "token", ServerURL: "wss://rtc"}) //nolint:goconst,lll // test literal, repetition is intentional
-		default:
-			http.NotFound(w, r)
+	mux := http.NewServeMux()
+	mux.HandleFunc("POST /auth/api/v1/auth/user/guest-register", func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(guestRegisterResponse{AccessToken: "access"}) //nolint:goconst,gosec,lll // test literal; G117 is a false positive for test fixtures
+	})
+	mux.HandleFunc("POST /api-room/api/v2/room", func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "Bearer access" {
+			t.Fatalf("room auth = %q", r.Header.Get("Authorization"))
 		}
-	}))
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(createRoomResponse{RoomID: "room"}) //nolint:goconst,lll // test literal, repetition is intentional
+	})
+	mux.HandleFunc("POST /api-room/api/v1/room/room/join", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	mux.HandleFunc("GET /api-room-manager/v2/room/room/connection-details", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("displayName") != "peer" {
+			t.Fatalf("displayName query = %q", r.URL.Query().Get("displayName"))
+		}
+		_ = json.NewEncoder(w).Encode(tokenResponse{RoomToken: "token"}) //nolint:goconst,lll // test literal, repetition is intentional
+	})
+
+	withWBAPIServer(t, mux)
 
 	access, err := registerGuest(context.Background(), "peer")
 	if err != nil {
@@ -95,20 +92,21 @@ func TestWBStreamAPIErrors(t *testing.T) {
 }
 
 func TestWBStreamGetRoomToken(t *testing.T) {
-	withWBAPIServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case "/auth/api/v1/auth/user/guest-register":
-			_ = json.NewEncoder(w).Encode(guestRegisterResponse{AccessToken: "access"}) //nolint:gosec,lll // G117: test-only API fixture
-		case "/api-room/api/v2/room":
-			_ = json.NewEncoder(w).Encode(createRoomResponse{RoomID: "created"})
-		case "/api-room/api/v1/room/created/join":
-			w.WriteHeader(http.StatusOK)
-		case "/api-room-manager/v2/room/created/connection-details":
-			_ = json.NewEncoder(w).Encode(connectionDetailsResponse{RoomToken: "token", ServerURL: "wss://rtc"})
-		default:
-			http.NotFound(w, r)
-		}
-	}))
+	mux := http.NewServeMux()
+	mux.HandleFunc("POST /auth/api/v1/auth/user/guest-register", func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(guestRegisterResponse{AccessToken: "access"}) //nolint:gosec,lll // G117: test-only struct mirroring upstream API shape
+	})
+	mux.HandleFunc("POST /api-room/api/v2/room", func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(createRoomResponse{RoomID: "created"})
+	})
+	mux.HandleFunc("POST /api-room/api/v1/room/{id}/join", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	mux.HandleFunc("GET /api-room-manager/v2/room/{id}/connection-details", func(w http.ResponseWriter, _ *http.Request) {
+		_ = json.NewEncoder(w).Encode(tokenResponse{RoomToken: "token"})
+	})
+
+	withWBAPIServer(t, mux)
 
 	p, err := NewPeer(context.Background(), "any", "peer", nil)
 	if err != nil {
